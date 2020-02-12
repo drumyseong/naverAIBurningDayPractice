@@ -1,3 +1,0 @@
-import PapagoNMT
-
-PapagoNMT.PreprocessSourceText()

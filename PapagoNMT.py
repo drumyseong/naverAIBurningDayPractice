@@ -1,8 +1,8 @@
 import os
 import sys
-import urllib.request
+import RequestAPI
 
-def PreprocessSourceText(original_Text):
+def preprocessSourceText(original_Text):
     '''
     source Text를 전처리함
         1. 문단 별로 Text를 구분하여 저장
@@ -44,26 +44,6 @@ def PreprocessSourceText(original_Text):
     '''
     return preprocessed_Text
 
-    
-def requestPapagoNMT(datas):
-    '''
-    Request Papago NMT > response와 rescode가 담긴 list 반환
-    :param datas:
-    :return: responses, rescodes
-    '''
-    client_id = "아이디"
-    client_secret = "비밀번호"
-    url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation" #API URL(N2MT)
-
-    request = urllib.request.Request(url)
-    request.add_header("X-NCP-APIGW-API-KEY-ID", client_id)
-    request.add_header("X-NCP-APIGW-API-KEY", client_secret)
-    responses = []; rescodes = []
-    for i, data in enumerate(datas):
-        responses.append(urllib.request.urlopen(request, data=data.encode("utf-8")))
-        rescodes.append(responses[i].getcode())
-    return responses, rescodes
-
 def getResponse(rescodes, responses):
     '''
     :param rescodes: 
@@ -79,7 +59,7 @@ def getResponse(rescodes, responses):
             responses_bodys.append(rescode)
     return responses_bodys
 
-def TranslateSourceText(original_Text, source_lang, target_lang):
+def getTranslatedText(original_Text, source_lang, target_lang):
     '''
     Naver API인 Papago NMT를 이용해 Original Text를 번역한 후 return
     :param original_Text: 사용자가 입력한 원본 텍스트(string)
@@ -88,14 +68,15 @@ def TranslateSourceText(original_Text, source_lang, target_lang):
     :return: 문단 별로 번역된 텍스트(or 오류코드) 리스트(string list)
     '''
     #orginal_Text preprocess
-    preprocessedText = PreprocessSourceText(original_Text)  # preprocessed paragraphs
+    url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
+    preprocessedText = preprocessSourceText(original_Text)  # preprocessed paragraphs
 
     datas = []
     for pt in preprocessedText:
         datas.append("source=" + source_lang + "&target=" + target_lang + "&text=" + pt)
 
     #request Papago NMT
-    responses, rescodes = requestPapagoNMT(datas)
+    responses, rescodes = RequestAPI.requestNaverAPI(datas,url)
 
     #get response
     responses_bodys = getResponse(responses,rescodes)
