@@ -51,8 +51,8 @@ def requestPapagoNMT(datas):
     :param datas:
     :return: responses, rescodes
     '''
-    client_id = "drumyseong@naver.com"
-    client_secret = "Seongwon2!"
+    client_id = "아이디"
+    client_secret = "비밀번호"
     url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation" #API URL(N2MT)
 
     request = urllib.request.Request(url)
